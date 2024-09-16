@@ -62,7 +62,9 @@ app.post("/api/node_click", async (req, res) => {
           Preface one with 'Option 1:' and the other
           with 'Option 2:'. One should be a novel idea/approach, the other the next actionable step
           for implementing the input (do not repeat what steps are given in the input, instead move forward).
-          Assume prior logical steps have been taken. Describe the respective strategies with one or two words in caps.`,
+          Assume prior logical steps have been taken. Describe the respective strategies with one or two words in caps.
+          If needed, suggest specific tools, frameworks, or methodologies the entrepreneur can use.
+          Additionally, take into account industry context, and propose approaches that account for **localized advice**, recognizing geographic, cultural, or economic differences in strategy execution.`,
         },
         {
           role: "user",
