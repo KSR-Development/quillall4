@@ -1,26 +1,27 @@
-import dotenv from "dotenv";
-import OpenAI from "openai";
-import express from "express";
-import bodyParser from "body-parser";
-import cors from "cors";
-import path from "path";
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const path = require('path');
+const express = require('express');
+const cors = require('cors');
+const OpenAI = require('openai');
+const dotenv = require('dotenv');
 
 dotenv.config();
 
+const app = express();
+const { PORT = 3000 } = process.env;
+
+const apiKey = process.env.OPENAI_API_KEY;
+
+if (!apiKey) {
+  throw new Error("API key is missing. Please set the OPENAI_API_KEY environment variable.");
+}
+
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: apiKey,
 });
 
-const app = express();
-
-// Use CORS middleware to allow requests from different origins
+app.use(express.json());
+app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(cors());
-app.use(bodyParser.json());
 
 app.post("/api/update_content", async (req, res) => {
   try {
@@ -50,7 +51,6 @@ app.post("/api/update_content", async (req, res) => {
   }
 });
 
-// New API endpoint for node click
 app.post("/api/node_click", async (req, res) => {
   try {
     const { content } = req.body;
@@ -86,12 +86,16 @@ app.post("/api/node_click", async (req, res) => {
   }
 });
 
-// Handle React routing, return all requests to React app
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "build", "index.html"));
+// // for future api routes if needed
+// app.get('/api/test', (req, res) => {
+//   res.json({ message: 'API is working' });
+// });
+
+// catch all remaining routes and return the React app
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
 });
 
-const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+    console.log(`Server is running on port ${PORT}`);
+})

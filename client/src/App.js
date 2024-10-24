@@ -2,6 +2,12 @@ import React, { useState } from "react";
 import BottomPanel from "./components/BottomPanel";
 import TreeFlow from "./components/TreeFlow";
 import axios from "axios";
+import LandingAnimation from "./components/LandingAnimations";
+
+
+const API_ENDPOINT = process.env.REACT_APP_MODE === 'development'
+  ? "http://localhost:3000/"
+  : "http://quillall-aws-env.eba-3mdctcb2.eu-north-1.elasticbeanstalk.com/";
 
 const App = () => {
   const [inputValue, setInputValue] = useState("");
@@ -10,7 +16,7 @@ const App = () => {
 
   const updateBranchContent = async () => {
     try {
-      const res = await axios.post("http://localhost:3001/api/update_content", {
+      const res = await axios.post(`${API_ENDPOINT}api/update_content`, {
         content: inputValue,
       });
       setResponse(res.data.answer);
@@ -23,6 +29,7 @@ const App = () => {
 
   return (
     <div>
+      <LandingAnimation />
       <BottomPanel
         inputValue={inputValue}
         setInputValue={setInputValue}

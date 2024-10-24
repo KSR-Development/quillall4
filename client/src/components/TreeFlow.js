@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import ReactFlow, { useNodesState, useEdgesState, Handle } from "reactflow";
-import "reactflow/dist/style.css";
+import {ReactFlow, useNodesState, useEdgesState, Handle } from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
 import axios from "axios";
-import "./App"; // Ensure you import the CSS file
+
+const API_ENDPOINT = process.env.REACT_APP_MODE === 'development'
+  ? "http://localhost:3000/"
+  : "http://quillall-aws-env.eba-3mdctcb2.eu-north-1.elasticbeanstalk.com/";
 
 const initialNodes = [
   {
@@ -28,6 +31,7 @@ const MIN_DISTANCE =
   Math.max(NODE_WIDTH, NODE_HEIGHT) + Math.max(NODE_WIDTH, NODE_HEIGHT) / 2;
 
 const CustomNode = ({ id, data }) => {
+
   const calculateSize = (text) => {
     const baseWidth = 150;
     const baseHeight = 200;
@@ -68,7 +72,7 @@ const CustomNode = ({ id, data }) => {
         alignItems: "center",
       }}
     >
-      <Handle type="target" position="bottom" /> {/* Target handle at bottom */}
+      <Handle type="target" id={`${id}-target`} position="bottom" />
       <div>{data.label}</div>
       <div
         style={{
@@ -80,7 +84,7 @@ const CustomNode = ({ id, data }) => {
       >
         {String(data.content)}
       </div>
-      <Handle type="source" position="top" /> {/* Source handle at top */}
+      <Handle type="source" id={`${id}-source`} position="top" />
     </div>
   );
 };
@@ -91,6 +95,7 @@ const TreeFlow = ({ inputValue, updateTrigger }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [nodeIdCounter, setNodeIdCounter] = useState(2);
+  // const updateNodeInternals = useUpdateNodeInternals();
 
   useEffect(() => {
     if (updateTrigger) {
@@ -108,7 +113,7 @@ const TreeFlow = ({ inputValue, updateTrigger }) => {
     if (!node.data.childrenCreated) {
       try {
         const response = await axios.post(
-          "http://localhost:3001/api/node_click",
+          `${API_ENDPOINT}api/node_click`,
           {
             content: node.data.content,
           }
@@ -135,13 +140,13 @@ const TreeFlow = ({ inputValue, updateTrigger }) => {
       toggleCollapseNode(node.id);
     }
   };
-
+  
+  // Then update the createChildNodes function to use these handle IDs:
   const createChildNodes = (parentNode, option1, option2) => {
     const parentNodeId = parentNode.id;
-
     const newNodes = [];
     const newEdges = [];
-
+  
     for (let i = 0; i < 2; i++) {
       const newNodeId = `${nodeIdCounter + i}`;
       const newNodeContent = i === 0 ? option1 : option2;
@@ -158,21 +163,21 @@ const TreeFlow = ({ inputValue, updateTrigger }) => {
         style: { width: NODE_WIDTH, height: NODE_HEIGHT },
         type: "custom",
       };
-
+  
       newNodes.push(newNode);
-
+  
       const newEdge = {
         id: `e${parentNodeId}-${newNodeId}`,
         source: parentNodeId,
         target: newNodeId,
-        sourceHandle: "top",
-        targetHandle: "bottom",
+        sourceHandle: `${parentNodeId}-source`,  // Use the source handle ID
+        targetHandle: `${newNodeId}-target`,     // Use the target handle ID
         animated: true,
         style: { stroke: "#000" },
       };
       newEdges.push(newEdge);
     }
-
+  
     setNodeIdCounter((id) => id + 2);
     setNodes((nds) => nds.concat(newNodes));
     setEdges((eds) => eds.concat(newEdges));

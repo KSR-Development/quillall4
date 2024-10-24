@@ -1,6 +1,7 @@
+
 import React, { useEffect } from "react";
-import "./LandingAnimation.css"; // Assuming you have a CSS file for styling
-import logo from "./images/logo.png"; // Correct path
+import "./LandingAnimation.css";
+import logo from "../assets/logo.png";
 
 const LandingAnimation = () => {
   useEffect(() => {

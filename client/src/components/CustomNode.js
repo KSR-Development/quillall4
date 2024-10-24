@@ -1,6 +1,5 @@
-// src/components/CustomNode.js
 import React, { useState, useEffect } from "react";
-import { Handle } from "reactflow";
+import { Handle } from '@xyflow/react';
 
 const labelStyle = {
   textAlign: "center",

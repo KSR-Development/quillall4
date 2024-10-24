@@ -1,70 +1,43 @@
-# Getting Started with Create React App
+# QuillAll Refactor
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The software required refactoring in order to deploy to AWS without errors. The deployed app is now available [here](http://quillall-aws-env.eba-3mdctcb2.eu-north-1.elasticbeanstalk.com/).
 
-## Available Scripts
+### Fixes:
 
-In the project directory, you can run:
+- Updated "reactflow" package to correct new path "@xyflow/react" to fix the "ResizeObserver loop completed with undelivered notifications" error.
 
-### `npm start`
+- Removed resize observer error code in index.html that was causing further errors.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Fixed edges between nodes not displaying on new "@xyflow/react" by adding appropriate "id" attribute to Handle component.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Replaced ReactDOM.render with createRoot to correctly run as React 18 (was running as 17 for back compatibility with this before).
 
-### `npm test`
+- Removed unused Tailwind dependecy - this was outdated and can easily be added back if needed.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Removed duplicate App.js and App.css files.
 
-### `npm run build`
+- Reduced application size from 1.41 GB to 672 MB by removing unused code and dependencies.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Fixed all smaller issues that resulted in build or runtime errors for a clean deployment.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Usage:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- To install node packages run `npm install`, `cd client` and `npm install` again.
 
-### `npm run eject`
+- To run in development mode run `npm run dev`. With this, the frontend sends API requests to the local version of the server.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- Depending on your configuration, you may need to set the environment variable for the OpenAI API:
+  - PowerShell: `$env:OPENAI_API_KEY="api_key_here"`
+  - Mac Terminal: `export OPENAI_API_KEY=api_key_here`
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- To deploy to AWS Elastic Beanstalk, zip only the files tracked by git and upload the zipped folder to AWS.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Directory
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- `.ebextensions/` contains configuration for AWS Elastic Beanstalk.
 
-## Learn More
+- `server/` contains the Express server used for handling OpenAI API calls.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- `package.json` contains the dependecies needed to run the server.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- `client/` contains the React front end, with additional dependencies in a package.json just for the front end.
